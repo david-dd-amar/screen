@@ -455,7 +455,7 @@ run_simple_clustering<-function(x,cor_thr=0.1){
 	return (clusters(g)$membership)
 }
 
-library(igraph);library(kernlab)
+try({library(igraph);library(kernlab)})
 run_leadingeigen_clustering<-function(x,cor_thr=0.1){
 	x = x >= cor_thr
 	mode(x) = 'numeric';diag(x)=1
