@@ -210,7 +210,7 @@ modified_znormix_halfnorm <- function (p, start.pi0=0.9,
     new.par
 }
 
-modified_znormix <- function (p, start.pi0=0.85, eps = 1e-03, niter = 1000, verbose = FALSE,min_mean_z1=1){
+modified_znormix <- function (p, start.pi0=0.85, eps = 1e-03, niter = 1000, verbose = FALSE,min_mean_z1=1,theoretical_null=F){
     z = as.matrix(qnorm(1 - p))
     z[is.infinite(z) & z < 0] = min(z[is.finite(z)])
     z[is.infinite(z) & z > 0] = max(z[is.finite(z)])
@@ -248,8 +248,10 @@ modified_znormix <- function (p, start.pi0=0.85, eps = 1e-03, niter = 1000, verb
         }
 	  new.par[2] = 0
 	  new.par[3] = max(new.par[3],1)
+	  if(theoretical_null){
+	    new.par[3] = 1
+	  }
 	  new.par[4] = max(min_mean_z1,new.par[4])
-       
         if (isTRUE(verbose)) 
             cat("iter", iter, "\tparameters=", new.par, "\tmax.diff=", 
                 max(abs(new.par - last.par)), fill = TRUE)
