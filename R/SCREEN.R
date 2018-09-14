@@ -31,6 +31,11 @@ E_step<-function(z_given_h_mat,pi_t_vec){
 	m = m / rowSums(m)
 	return(m)
 }
+get_model_log_likelihood<-function(z_given_h_mat,pi_t_vec){
+  m = t(t(z_given_h_mat)*pi_t_vec)
+  m = rowSums(m)
+  return(sum(log(m)))
+}
 M_step <- function(h_given_z_mat){return (colMeans(h_given_z_mat))}
 runEM<-function(z_given_h_mat,p_0,convergenceEps = 1e-6,maxiter=1200){
 	p_t = p_0
