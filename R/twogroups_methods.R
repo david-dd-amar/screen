@@ -1,5 +1,23 @@
-######################### Wrapper methods for the locfdr package ########################
+# Beta-uniform estimation of two-groups using BioNet
+library(BioNet)
+run_bum<-function(ps){
+  model = fitBumModel(ps,plot=F)
+  beta0 = c(1,1)
+  beta1 = c(model$a,1)
+  pi0 = (model$lambda) + (1-model$lambda)*model$a
+  f0 = dbeta(ps,beta0[1],beta0[2])
+  f1 = dbeta(ps,beta1[1],beta1[2])
+  fdr = pi0*f0 / (pi0*f0 + (1-pi0)*f1)
+  params = c(pi0,beta0,beta1)
+  names(params) = c("pi0","b0_shape1","b0_shape2","b1_shape1","b1_shape2")
+  return(list(fdr = fdr, params=params,f_0=f0,f_1=f1))
+}
+get_f0_f1_bum<-function(ps,obj=NULL){
+  if(is.null(obj)){obj = run_bum(ps)}
+  return(obj)
+}
 
+######################### Wrapper methods for the locfdr package ########################
 # nulltype is 1 or 2
 run_locfdr<-function(zs,dfs=15,nulltype=1,...){
 	try({

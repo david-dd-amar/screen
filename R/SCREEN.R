@@ -1,5 +1,5 @@
 # This is the code implementing the replicability analysis algorithms in the paper
-# For Screen: igraph is needed
+# For SCREEN: igraph is needed
 # To run the method: source("twogroups_methods_for_submission.R") 
 #	- these are implementations of locfdr wrappers and the normix method
 # For executables of SCREEN and SCREEN-ind, or an executable of all six tested methods see the code 
@@ -556,6 +556,21 @@ get_study_marginal_estimation<-function(pvals,lfdr_method='znormix',use_power=T,
 			if (curr_tdrs > 0){pws[j] = max(0.1,curr_rejs/curr_tdrs)}
 		}
 	}
+  if (lfdr_method=='bum'){
+    lfdr_objs = apply(pvals,2,run_bum)
+    f_1_mat = sapply(lfdr_objs,function(x)x[["f_1"]])
+    f_1_mat[is.nan(f_1_mat)] = 0
+    f_0_mat = sapply(lfdr_objs,function(x)x[["f_0"]])
+    pi0_study_vec = sapply(lfdr_objs,function(x) x$params[1])
+    lfdrs = sapply(lfdr_objs,function(x)x$fdr)
+    pws = c()
+    for (j in 1:ncol(f_0_mat)){
+      curr_tdrs = sum(1-lfdrs[,j])
+      curr_rejs = sum(lfdrs[,j]<0.3)
+      pws[j] = 0.1
+      if (curr_tdrs > 0){pws[j] = max(0.1,curr_rejs/curr_tdrs)}
+    }
+  }
 
 	# These are used to shrink the effect of f_1
 	if (use_power){
