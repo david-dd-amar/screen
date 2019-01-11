@@ -15,7 +15,7 @@ if(length(args) < 4){
 
 pvals = as.matrix(read.delim(args[1],row.names = 1,header=T,check.names = F))
 pvals[is.na(pvals)] = 0.5
-is_ind = args[2]=="0"
+model_study_dep = args[2]=="1"
 lfdr_method = args[3]
 out_path = args[4]
 libs = c("igraph","BiocGenerics","graph","kernlab","RBGL","locfdr","BioNet")
@@ -57,15 +57,15 @@ use_power = lfdr_method != "bum"
 
 print("Running SCREEN with the following parameters:")
 print(paste("input_matrix:",args[1]))
-print(paste("Model study dependence:",is_ind))
+print(paste("Model study dependence:",model_study_dep))
 print(paste("Two groups method:",lfdr_method))
 print(paste("Convergence epsilon:",emEps))
 print(paste("nH:",nH))
 
-if(is_ind){
+if(model_study_dep){
   res = SCREEN(pvals,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
 }
-if(!is_ind){
+if(!model_study_dep){
   res = SCREEN_ind(pvals,ks=ks,lfdr_method = lfdr_method,use_power = use_power)
 }
 
