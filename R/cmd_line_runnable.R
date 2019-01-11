@@ -40,6 +40,8 @@ if(length(args > 4)){
   }
 }
 
+nH = min(nH,2^(ncol(pvals)+1))
+
 if(!is.null(rpath)){
   sapply(libs,library,lib.loc=rpath,character.only = T)
 }
@@ -52,6 +54,13 @@ source("https://raw.githubusercontent.com/david-dd-amar/screen/master/R/twogroup
 
 ks = 2:ncol(pvals)
 use_power = lfdr_method != "bum"
+
+print("Running SCREEN with the following parameters:")
+print(paste("input_matrix:",args[1]))
+print(paste("Model study dependence:",is_ind))
+print(paste("Two groups method:",lfdr_method))
+print(paste("Convergence epsilon:",emEps))
+print(paste("nH:",nH))
 
 if(is_ind){
   res = SCREEN(pvals,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
