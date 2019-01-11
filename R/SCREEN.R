@@ -37,11 +37,11 @@ get_model_log_likelihood<-function(z_given_h_mat,pi_t_vec){
   return(sum(log(m)))
 }
 M_step <- function(h_given_z_mat){return (colMeans(h_given_z_mat))}
-runEM<-function(z_given_h_mat,p_0,convergenceEps = 1e-6,maxiter=1200){
+runEM<-function(z_given_h_mat,p_0,convergenceEps = 1e-6,maxiter=1200,verbose=F){
 	p_t = p_0
 	num_iters = 0
 	while(num_iters <= maxiter){
-		if (num_iters > 1 && num_iters %% 100 == 0){
+		if (verbose && num_iters > 1 && num_iters %% 100 == 0){
 			print(paste("completed EM iterations: ",num_iters))
 		}
 		num_iters = num_iters + 1
@@ -50,7 +50,7 @@ runEM<-function(z_given_h_mat,p_0,convergenceEps = 1e-6,maxiter=1200){
 		if (max(abs(new_p - p_t)) < convergenceEps){break}
 		p_t = new_p
 	}
-	print(paste("**** completed all EM iterations: ",num_iters))
+	if(verbose){print(paste("**** completed all EM iterations: ",num_iters))}
 	return (p_t)
 }
 # A method to get the pi(h) values under independence assumption
@@ -144,7 +144,7 @@ Space_constrained_estimation<-function(lfdrs,f_1_mat,f_0_mat,pi0Vec=NULL,
 		if (sum(boolVec) < length(boolVec)){eps = max(eps,max(currPi[!boolVec]))}
 		currPi = currPi[boolVec];currH = currH[boolVec,]
 		sumEstimated = sum(currPi)
-		print (paste("num configs:", nrow(currH),"xi is:", sumEstimated))
+		print (paste("num configs:", nrow(currH),"xi is:", sumEstimated,",num studies is:",ind))
 	}
 	return(list(H=cbind(currH,currPi),eps=eps,sumEstimated=sumEstimated))
 }

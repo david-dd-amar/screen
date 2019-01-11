@@ -13,7 +13,8 @@ if(length(args) < 4){
   q("no")
 }
 
-pvals = read.delim(args[1],row.names = 1,header=T)
+pvals = as.matrix(read.delim(args[1],row.names = 1,header=T,check.names = F))
+pvals[is.na(pvals)] = 0.5
 is_ind = args[2]=="0"
 lfdr_method = args[3]
 out_path = args[4]
@@ -53,12 +54,14 @@ ks = 2:ncol(pvals)
 use_power = lfdr_method != "bum"
 
 if(is_ind){
-  res = SCREEN(pvals,ks=ks,nH=10000,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
+  res = SCREEN(pvals,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
 }
 if(!is_ind){
   res = SCREEN_ind(pvals,ks=ks,lfdr_method = lfdr_method,use_power = use_power)
 }
 
+res = cbind(rownames(pvals),res)
+write.table(res,sep="\t",row.names=F,col.names = T,quote=F,file=out_path)
 
 
 
