@@ -10,6 +10,7 @@ if(length(args) < 4){
   print("igraph, locfdr,BioNet,devtools")
   print("6. (OPTIONAL): nH=n, where n is the maximal number of allowed configurations for SCREN")
   print("7. (OPTIONAL): emEps=e, where e is the convergence parameter for the EM (default=1e-6)")
+  print("8. (OPTIONAL): minP=x, where x is the minimal allowed p-value, default is 0")
   q("no")
 }
 
@@ -23,6 +24,8 @@ libs = c("igraph","BiocGenerics","graph","kernlab","RBGL","locfdr","BioNet")
 emEps = 1e-6
 nH=10000
 rpath=NULL
+use_power=T
+minP = 0
 
 if(length(args > 4)){
   optional_parms = args[5:length(args)]
@@ -37,6 +40,11 @@ if(length(args > 4)){
   if(any(grepl("emEps=",optional_parms))){
     ind = which(grepl("emEps=",optional_parms))
     emEps = as.numeric(gsub("emEps=",replacement = "",x=optional_parms[ind]))
+  }
+  if(any(grepl("minP=",optional_parms))){
+    ind = which(grepl("minP=",optional_parms))
+    minP = as.numeric(gsub("minP=",replacement = "",x=optional_parms[ind]))
+    use_power=F
   }
 }
 
@@ -53,7 +61,7 @@ source("https://raw.githubusercontent.com/david-dd-amar/screen/master/R/SCREEN.R
 source("https://raw.githubusercontent.com/david-dd-amar/screen/master/R/twogroups_methods.R")
 
 ks = 2:ncol(pvals)
-use_power = lfdr_method != "bum"
+use_power = use_power && (lfdr_method != "bum")
 
 print("Running SCREEN with the following parameters:")
 print(paste("input_matrix:",args[1]))

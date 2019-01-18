@@ -407,9 +407,10 @@ clustering_based_lfdr_analysis<-function(lfdrs,clustering,f_0_mat,f_1_mat,...){
 	return(final_probs)
 }
 
-perform_clustering_based_lfdr_analysis<-function(lfdrs,f_0_mat,f_1_mat,...){
-	study_corrs = get_study_pair_corr_matrix(f_1_mat,f_0_mat,B=50,convergenceEps=1e-4)
-	clustering = run_leadingeigen_clustering(study_corrs)
+perform_clustering_based_lfdr_analysis<-function(lfdrs,f_0_mat,f_1_mat,
+      corr_net_B=50,corr_net_eps = 1e-4,corr_thr=0.1,...){
+	study_corrs = get_study_pair_corr_matrix(f_1_mat,f_0_mat,B=corr_net_B,convergenceEps=corr_net_eps)
+	clustering = run_leadingeigen_clustering(study_corrs,cor_thr=corr_thr)
 	print ("########## Cluster sizes: ###########")
 	print(table(clustering))
 	return (clustering_based_lfdr_analysis(lfdrs,clustering,f_0_mat,f_1_mat,...))
@@ -665,7 +666,9 @@ analyze_pval_matrix_slim<-function(pvals,ks = 3:6,nH=1024,emEps =1e-6, lfdr_meth
 	return (obj)
 }
 
-SCREEN<-function(pvals,ks = 3:6,nH=1024,emEps =1e-6, lfdr_method='znormix',use_power=T,threegroups=T,...){
+SCREEN<-function(pvals,ks = 3:6,nH=1024,emEps =1e-6, lfdr_method='znormix',
+                 use_power=T,threegroups=T,
+                 corr_net_eps=1e-3,corr_net_B=50,corr_net_thr=0.2,...){
 	print ("Analyzing each study")
 	mar_est = get_study_marginal_estimation(pvals,lfdr_method=lfdr_method,use_power=use_power,threegroups=threegroups,...)
 	lfdr_objs = mar_est$lfdr_objs
@@ -676,7 +679,9 @@ SCREEN<-function(pvals,ks = 3:6,nH=1024,emEps =1e-6, lfdr_method='znormix',use_p
 	print ("obtain local fdrs in each study")
 	lfdrs = sapply(lfdr_objs,function(x)x$fdr)
 	print ("Done")
-	clust_analysis = perform_clustering_based_lfdr_analysis(lfdrs,f_0_mat,f_1_mat,nH=nH,convergenceEps=emEps)
+	clust_analysis = perform_clustering_based_lfdr_analysis(
+	  lfdrs,f_0_mat,f_1_mat,nH=nH,convergenceEps=emEps,
+	  corr_net_B = corr_net_B,corr_thr = corr_net_thr,corr_net_eps = corr_net_eps)
 	clust_analysis = clust_analysis[,ks]
 	colnames(clust_analysis) = paste("SCREEN",ks)
 	return (clust_analysis)
