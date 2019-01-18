@@ -75,7 +75,7 @@ print(paste("Convergence epsilon:",emEps))
 print(paste("nH:",nH))
 print(paste("minP:",minP))
 print(paste("num genes:",nrow(pvals2)))
-pritn(paste("num studies:",ncol(pvals2)))
+print(paste("num studies:",ncol(pvals2)))
 
 if(model_study_dep){
   res = SCREEN(pvals2,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
