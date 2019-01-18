@@ -63,21 +63,28 @@ source("https://raw.githubusercontent.com/david-dd-amar/screen/master/R/twogroup
 ks = 2:ncol(pvals)
 use_power = use_power && (lfdr_method != "bum")
 
+pvals2 = apply(pvals,2,function(x)pmax(x,minP))
+colnames(pvals2) = colnames(pvals)
+rownames(pvals2) = rownames(pvals)
+
 print("Running SCREEN with the following parameters:")
 print(paste("input_matrix:",args[1]))
 print(paste("Model study dependence:",model_study_dep))
 print(paste("Two groups method:",lfdr_method))
 print(paste("Convergence epsilon:",emEps))
 print(paste("nH:",nH))
+print(paste("minP:",minP))
+print(paste("num genes:",nrow(pvals2)))
+pritn(paste("num studies:",ncol(pvals2)))
 
 if(model_study_dep){
-  res = SCREEN(pvals,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
+  res = SCREEN(pvals2,ks=ks,lfdr_method = lfdr_method,emEps=emEps,nH=nH,use_power = use_power)
 }
 if(!model_study_dep){
-  res = SCREEN_ind(pvals,ks=ks,lfdr_method = lfdr_method,use_power = use_power)
+  res = SCREEN_ind(pvals2,ks=ks,lfdr_method = lfdr_method,use_power = use_power)
 }
 
-res = cbind(rownames(pvals),res)
+res = cbind(rownames(pvals2),res)
 write.table(res,sep="\t",row.names=F,col.names = T,quote=F,file=out_path)
 
 
